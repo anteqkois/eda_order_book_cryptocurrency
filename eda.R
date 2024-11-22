@@ -7,6 +7,7 @@
 library(dplyr)
 library(ggplot2)
 library(jsonlite)
+library(lubridate)
 
 # Wczytywanie pliku JSON
 data <- fromJSON("data-crypto-format2.json")
@@ -32,22 +33,22 @@ scaleFactor <- (max(data_clean$h, na.rm = TRUE) - min(data_clean$l, na.rm = TRUE
 # Tworzenie wykresu
 ggplot(data_clean, aes(x = ts)) +
   # Linia dla BSP Avg
-  geom_line(aes(y = bsp_avg, color = "BSP Avg")) +
+  geom_line(aes(y = bsp_avg, color = "Metryka Order Book")) +
   # Linia dla ceny wysokiej, przeskalowanej
-  geom_line(aes(y = (h - min(data_clean$l, na.rm = TRUE)) / scaleFactor, color = "High Price"), linetype = "dashed") +
+  geom_line(aes(y = (h - min(data_clean$l, na.rm = TRUE)) / scaleFactor, color = "Najwyższa cena"), linetype = "dashed") +
   # Linia dla ceny niskiej, przeskalowanej
-  geom_line(aes(y = (l - min(data_clean$l, na.rm = TRUE)) / scaleFactor, color = "Low Price"), linetype = "dashed") +
-  scale_color_manual(values = c("BSP Avg" = "blue", "High Price" = "green", "Low Price" = "red")) +
+  geom_line(aes(y = (l - min(data_clean$l, na.rm = TRUE)) / scaleFactor, color = "Najniższa cena"), linetype = "dashed") +
+  scale_color_manual(values = c("Metryka Order Book" = "blue", "Najwyższa cena" = "green", "Najniższa cena" = "red")) +
   # Ustawienie pierwszej osi Y dla BSP Avg
   scale_y_continuous(
-    name = "BSP Avg",
+    name = "Metryka Order Book",
     limits = c(-0.5, 2),
     sec.axis = sec_axis(
       trans = ~ . * scaleFactor + min(data_clean$l, na.rm = TRUE),
-      name = "Price (High / Low)"
+      name = "Cena"
     )
   ) +
-  labs(title = "BSP Avg vs Price (High and Low)", x = "Timestamp") +
+  labs(title = "Metryka Order Book, najwyższa i najniższa cena  w danym interwale", x = "Timestamp") +
   theme(
     axis.title.y.left = element_text(color = "blue"),
     axis.text.y.left = element_text(color = "blue"),
